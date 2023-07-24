@@ -1,0 +1,8 @@
+2023-07-13 10:08:05,814 - config.db - WARNING - (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'm.`status` =0   order by rand() limit 1' at line 1")
+2023-07-13 10:08:10,108 - config.db - WARNING - (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'm.`status` =0   order by rand() limit 1' at line 1")
+2023-07-13 10:08:34,787 - config.db - WARNING - (1054, "Unknown column 'investor_id' in 'field list'")
+2023-07-13 10:08:53,537 - config.db - WARNING - (1054, "Unknown column 'investor_id' in 'field list'")
+2023-07-13 16:23:44,132 - config.db - WARNING - (1054, "Unknown column 'investor_id' in 'field list'")
+2023-07-13 16:26:14,704 - config.db - WARNING - (1054, "Unknown column 'investor_id' in 'field list'")
+2023-07-13 16:36:16,897 - config.db - WARNING - (1054, "Unknown column 'investor_id' in 'field list'")
+2023-07-13 16:58:19,644 - config.db - WARNING - (1054, "Unknown column 'investor_id' in 'field list'")

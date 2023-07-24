@@ -1,0 +1,6 @@
+2023-06-26 10:13:28,729 - config.db - WARNING - (1054, "Unknown column 'certification_time' in 'field list'")
+2023-06-26 10:13:43,600 - config.db - WARNING - (1054, "Unknown column 'certification_time' in 'field list'")
+2023-06-26 10:14:31,001 - config.db - WARNING - (1054, "Unknown column 'certification_time' in 'field list'")
+2023-06-26 13:56:04,879 - config.db - WARNING - (1054, "Unknown column 'certification_time' in 'field list'")
+2023-06-26 15:26:50,978 - config.db - WARNING - (1054, "Unknown column 'certification_time' in 'field list'")
+2023-06-26 16:54:02,323 - config.db - WARNING - (1054, "Unknown column 'certification_time' in 'field list'")
