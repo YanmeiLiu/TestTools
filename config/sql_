@@ -1,0 +1,153 @@
+-- 查询最近7天每日新增的注册用户数
+select date(current_date()-1),count(1) 新增总用户数,count(case when kind = 1 then 0 end ) 手机号用户数,count(case when kind =  0 then 0 end) 微信用户数
+from user
+where date(created_at)>=date_sub(current_date(),interval 7 day)  and date(created_at)!=current_date() and source = 1;
+
+-- 近7天发布文章数，online_time首次发布时间，变更上下线状态该数据不变
+
+select count(1) 近7天总上线文章数,
+count(case when t.is_business = 1 and t.busi_type =0 then 0 end ) 商家端发布文章,
+count(case when t.is_business = 1 and t.busi_type =1 then 0 end ) 商家端发布资讯,
+count(case when t.is_business = 0 and t.author_type = 0 then 0 end ) 内部作者发布文章,
+count(case when t.is_business = 0 and t.author_type = 1 then 0 end ) 外部作者发布文章
+from
+(
+select pe.id,pe.title,pe.state,pe.online_time,
+pe.is_business,pe.business_user_id,pe.busi_type,pe.publish_state,pe.is_deleted,pea.id author_id,pea.`author_type`
+from  product_evaluation pe left join product_evaluation_author pea on pe.author_id = pea.id
+where pe.is_deleted = 0 and pe.is_draft = 0 and pe.state = 1 and
+date(pe.online_time)>=date_sub(current_date(),interval 7 day) and date(pe.online_time)!=current_date())t ;
+
+
+
+-- 查询订阅信息
+select count(distinct a.product_evaluation_id)  推送文章数,
+count(distinct a.user_attention_id)  推送用户数,
+count(a.id)  推送消息数 from
+(
+select id,product_evaluation_id,user_attention_id,created_at
+from wechat_artcle_push_log
+where date(created_at) >= DATE_SUB(CURRENT_DATE(),INTERVAL 1 DAY) and date(created_at) != CURRENT_DATE()
+) a ;
+
+-- 查询最近7日每日新增的订阅作者、话题的用户数
+select count(distinct open_id) 关注用户,
+count(case when type='author' then 0 end)  关注作者数,
+count( case when type='topic' then 0 end)  关注话题数
+from user_attention_wechat_relation
+where date(created_at) >= DATE_SUB(CURRENT_DATE(),INTERVAL 7 DAY) and date(created_at)!=current_date() and state = 0
+;
+
+-- 查询最近7日每日退订的订阅作者、话题的用户数
+select date(updated_at),
+count(case when type='author' then 0 end)  退订关注作者数,
+count( case when type='topic' then 0 end)  退订关注话题数
+from user_attention_wechat_relation
+where date(updated_at) >= DATE_SUB(CURRENT_DATE(),INTERVAL 7 DAY) and date(updated_at)!=current_date()  and state = -1
+group by date(updated_at);
+
+
+-- 在线产品组成
+select count(1) 总在线产品,
+count(case when t.busi_create !=1 and t.project_id is  null then 0 end) 在线产品_平台创建 ,
+count(case when t.busi_create = 1 then 0 end) 在线产品_商家创建 ,
+count( case when t.busi_create != 1 and t.project_id is not null then 0 end ) 在线产品_商家认领
+from
+(select p.id,p.name,p.state,p.busi_create,bup.project_id,bup.created_at,bup.business_user_id
+from project p  left join business_user_project bup on p.id = bup.project_id and bup.state =0 and date(bup.`created_at`)<date(current_date())
+where  p.state = 1 and p.source = 1 and date(p.`created_at`)<date(current_date()) ) t ;
+
+
+
+-- 统计近7天的点评数处理情况，state =2 审核拒绝 state = 1 审核通过 state=0 待审核
+select date(current_date()-1) 统计近7天数据,count(1) 总提交点评数,
+count(case when state = 0 then 0 end )  未处理,
+count(case when state = 1 then 0 end )  已处理_审核通过,
+count(case when state = 2 then 0 end )  已处理_拒绝,
+count(case when state = -1 then 0 end )  已删除
+from project_comments
+where  DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= date(created_at) and date(created_at) !=CURDATE() ;
+
+-- 查询截止到昨天的所有点评通过数据，待点评数据和热评数据
+select count(case when state = 1 then 0 end ) 在线点评总量,
+count(case when state = 1 and random= 0 then 0 end ) 真实点评,
+count(case when state = 1 and random= 1 then 0 end ) 导入点评,
+count(case when state = 0 then 0 end ) 待审核点评数,
+count(case when state = 1  and is_hot = 1 then 0 end ) 在线热评数
+from project_comments
+where  project_id in (select id from project where state = 1 and source = 1)
+and  date(`audit_time`)<curdate()
+and date(`created_at`)<curdate();
+
+
+-- 按照产品的不同点评个数分级,因为是定时任务每天凌晨统计前一天的数据，所以时间直接用今天的数据就好
+select date( `created_at`), count(1) 有点评的产品数,count(case when comments_num>=20 then 0 end ) 点评数_大于等于20,
+count(case when comments_num >=1 and comments_num<=9 then 0 end ) 点评数_1_9,
+count(case when comments_num >=10 and comments_num<=19 then 0 end ) 点评数_10_19
+from compute_project_comments where  date(created_at)=current_date() and project_id in (select id from project where state = 1 and source = 1 );
+
+
+
+-- 查询 评论数 = 0 的在线产品数
+select count(1) from  project
+where id not in (
+    select project_id from compute_project_comments where date(created_at)=date(current_date()) and comments_num>0
+)
+    and state =1 and date(created_at)<date(current_date()) and date(audit_time)<date(current_date()) and source = 1;
+
+
+-- 查询截止到昨天真实用户（非导入点评数据）点评的个数分级
+
+select count(1) 总用户数,
+count(case when t.num>=1 and t.num<=3 then 0 end) 用户点评_1_3,
+count(case when t.num>=4 and t.num<=9 then 0 end) 用户点评_4_9,
+count(case when t.num>=10 and t.num<=99 then 0 end) 用户点评_10_99,
+count(case when t.num>=100 then 0 end) 用户点评_100
+from (
+    select pc.user_id,count(pc.id) as num from project_comments pc
+    left join project p on pc.project_id  = p.id and p.state = 1
+    where pc.state = 1 and pc.random = 0  and date(pc.audit_time)<CURDATE() group by pc.user_id
+) as t;
+
+
+
+-- 查询最近7天的留资情况,用户留资（11 找软件 10 优惠活动 9 我要咨询 8 申请试用 7 联系商家 6 下载详情报价）
+-- state=0 ,status =0 :未处理 ；
+-- state=0 ,status =1 :已处理处理；
+-- state= -1 已删除 ,
+select count(1) 总留资数,
+count(case when source = 6 then  0 end ) 下载详情报价,
+count(case when source = 7 then  0 end ) 联系商家,
+count(case when source = 8 then  0 end ) 申请试用,
+count(case when source = 9 then  0 end ) 我要咨询,
+count(case when source = 10 then  0 end ) 优惠活动,
+count(case when source = 11 then  0 end ) 找软件,
+count(case when source = 13 then  0 end ) sem帮我选软件,
+count(case when source = 14 then  0 end ) sem获取分析报告,
+count(case when source = 15 then  0 end ) sem立即咨询
+from ent_abutment
+where source >=6  and source!=12
+and DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= date(created_at)  and  date(created_at) != CURDATE()
+;
+
+-- 查询最近7天用户留资处理情况:
+select  date(current_date()-1) 统计截止日期,
+count(1) 留资总数,count(case when state =0 and status=1 then  0 end ) 已处理,
+count(case when state =0 and status=0 then  0 end ) 未处理,
+count(case when state =-1  then  0 end ) 已删除
+from ent_abutment
+where source >=6 and source !=12
+and DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= date(created_at) and date(created_at) !=CURDATE()  ;
+
+-- 统计商家入驻申请拒绝
+select  date(current_date()-1) 统计截止日期,
+count(1) 总申请数,
+count(case when state =0 and status=1 then  0 end ) 已处理_同意入驻,
+count(case when state =0 and status=2 then  0 end ) 已处理_拒绝入驻,
+count(case when state =0 and status=0 then  0 end ) 未处理,
+count(case when state =-1  then  0 end ) 已删除
+from ent_abutment where  source =12 and DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= date(created_at) and date(created_at) !=CURDATE()  ;
+
+
+
+
