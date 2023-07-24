@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="./static/styles.css">
+
+    <title>Different Users</title>
+</head>
+<body>
+
+<form name="myForm" action="" method="post" onsubmit="">
+    <p>环境：</p>
+    <p>
+        <input type="radio" name="env_db" checked="checked" value="test"/>test
+        <input type="radio" name="env_db" value="pre" />pre
+        <input type="radio" name="env_db" value="online" disabled/>online
+    </p>
+    <p>用户类型：</p>
+    <p>
+        <input type="radio" name="user_type" value="0"/>普通注册用户
+        <input type="radio" name="user_type" value="1"/>创业者
+        <input type="radio" name="user_type" value="2"/>机构管理员
+        <input type="radio" name="user_type" value="3"/>投资人
+        <input type="radio" name="user_type" value="4"/>投资人&投资管理员
+        <input type="radio" name="user_type" value="5"/>创业者&投资管理员<br>
+        <input type="radio" name="user_type" checked="checked" value="999"/>随机用户<br>
+    </p>
+    <p>用户数：<input type="text" name="user_nums" value="1"></p>
+    <p><input type="submit" name="submit_button" value="获取用户"/></p>
+    {{user_info}}
+    <table border="1px">
+        <tr>
+            <td>手机号</td>
+            <td>当前验证码</td>
+            <td>user_id</td>
+            <td>昵称</td>
+
+            <td>创业者</td>
+            <td>投资人</td>
+            <td>机构管理员</td>
+        </tr>
+        <tr>
+            {% for item in user_info %}
+            <!--            {{item.user}}-->
+            {% if item.code !=9 %}
+
+            <td>{{item.get("user").mobile}}</td>
+            <td>{{item["user"].mobile_code}}</td>
+            {% if item.code ==0 %}
+
+            <td>{{item.user.user_id}}</td>
+            <td>{{item["user"].nick }}</td>
+            <td>{% if item["entrepreneur"].entrepreneur =="yes" %} √ {% else %} × {% endif %}</td>
+            <td>{% if item["investor"].investor =="yes" %} √ {% else %} × {% endif %}</td>
+            <td>{% if item["investor_manager"].investor_manager =="yes" %} √ {% else %} × {% endif %}</td>
+            {% else %}
+            <td colspan="5" align="center">{{item.msg}}</td>
+            {% endif %}
+            {% else %}
+            <td colspan="7" align="center">{{item.msg}}</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+
+    </table>
+
+</form>
+</body>
+</html>

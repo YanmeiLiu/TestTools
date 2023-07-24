@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="./static/styles.css">
+
+    <title>user_info</title>
+</head>
+<body>
+<!--{{user_info}}-->
+<!-- 顶部导航 -->
+
+<div class="headerpage" style="position:absolute;z-index:999;width: 100%;">
+    <iframe src="./head.html" frameborder="0" scrolling="no" width="100%" height="100px"></iframe>
+
+    <form name="myForm" action="" method="post" onsubmit="">
+        <p>环境：
+            <input type="radio" name="env_db" checked="checked" value="test"/>test
+            <input type="radio" name="env_db" value="pre"/>pre
+            <input type="radio" name="env_db" value="online" disabled/>online
+        </p>
+        <p>user_id：<input type="text" name="user_id" size="30" placeholder="user_id、mobile、nick至少输入一个">
+            mobile：<input type="text" name="mobile">
+            nick：<input type="text" name="nick"></p>
+        <p><input type="submit" name="submit_button" value="查询"/></p>
+        <table border="1px">
+            <tr>
+                <td>user_id</td>
+                <td>昵称</td>
+                <td>手机号</td>
+                <td>当前验证码</td>
+                <td>创业者</td>
+                <td>投资人</td>
+                <td>机构管理员</td>
+            </tr>
+            {% if user_info.code ==0 %}
+            <tr>
+                <td>{{ user_info.user.user_id }}</td>
+                <td>{{ user_info["user"].nick }}</td>
+                <td>{{ user_info.get("user").mobile }}</td>
+                <td>{{ user_info["user"].mobile_code }}</td>
+                <td>{% if user_info["entrepreneur"].entrepreneur =="yes" %} {{user_info["entrepreneur"].project_id}} {%
+                    elif
+                    user_info["entrepreneur"].entrepreneur =="no"%} × {% else%} {{user_info["entrepreneur"].entrepreneur
+                    }}
+                    {%
+                    endif %}
+                </td>
+                <td>{% if user_info["investor"].investor =="yes" %} {{user_info["investor"].investor_id}} {% elif
+                    user_info["investor"].investor =="no"%} × {% else%} {{user_info["investor"].investor }} {% endif %}
+                </td>
+                <td>{% if user_info["investor_manager"].investor_manager =="yes" %}
+                    {{user_info["investor_manager"].investor_id}} {% else %} × {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" align="center">{{user_info.msg}}</td>
+            </tr>
+            {% endif %}
+        </table>
+    </form>
+</div>
+</body>
+</html>

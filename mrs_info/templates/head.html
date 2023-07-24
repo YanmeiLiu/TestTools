@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <base href="http://172.17.13.67:80">
+    <title>Title</title>
+    <!--导入基本样式-->
+    <link style="text/css" rel="stylesheet" href="css/bootstrap.css">
+    <!--导入基本样式的压缩-->
+    <link style="text/css" rel="stylesheet" href="css/bootstrap.min.css">
+    <!--导入主题样式  注意：顺序 不可变-->
+    <link style="text/css" rel="stylesheet" href="css/bootstrap-theme.css">
+</head>
+<body>
+<ul class="nav nav-tabs">
+    <li><a href="/index" data-toggle=tab">首页</a></li>
+
+    <li><a href="/users" data-toggle=tab">用户信息</a></li>
+
+    <li><a href="/diffusers" data-toggle=tab">不同用户</a></li>
+
+    <li><a href="/project" data-toggle=tab">项目信息</a></li>
+
+</ul>
+
+
+</body>
+<!--  // 从本地存储中获取存储的id-->
+<!--  var aClick = sessionStorage.getItem('aClick');-->
+<!--  if(aClick){-->
+<!--    //改变id对应的a标签的字体颜色以及加粗-->
+<!--    $('#'+aClick).css('color','green');-->
+<!--    $('#'+aClick).css('font-weight','400');-->
+<!--  }-->
+
+<!--  //点击时存储id-->
+<!--  $('.left').find('a').on('click',function(){-->
+<!--    sessionStorage.setItem('aClick',$(this).attr('id'));-->
+<!--  })-->
+</html>

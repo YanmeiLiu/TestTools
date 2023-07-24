@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="./static/styles.css">
+    <title>user_info</title>
+</head>
+<body>
+{{project}}
+
+<table border="1px">
+    <tr>
+        <td>项目id</td>
+        <td>项目名称</td>
+        <td>项目状态</td>
+        <td colspan="2" align="center">待审核/认领人</td>
+        <td>待审核的资料</td>
+        <td>联系人</td>
+        <td>融资历史</td>
+        <td colspan="2" align="center">路演</td>
+        <td colspan="2" align="center">融资状态</td>
+
+
+    </tr>
+    {% if project.code ==0 %}
+    <tr>
+        <td>{{ project.project_id }}</td>
+        <td>{{ project.project_name }}</td>
+        <td>{{ project.project_status }}</td>
+        <td>{{ project.draft_entrepreneur_num }}</td>
+        <td>{{project.entrepreneur_num}}</td>
+        <td>{% if project.draft =="yes" %} √ {% else %} × {% endif %}</td>
+        <td>{{project.contact}}</td>
+        <td>{{project.financing}}</td>
+        <td>{% if project.road_show.has_road_show =="yes" %} √ {% else %} × {% endif %}</td>
+        <td>{% if project.road_show.has_road_show =="no" %} - {% else %} {{project.road_show.order_type}} {% endif %}
+        <td>{% if project.online_financing.is_financing =="yes" %} √ {% else %} × {% endif %}</td>
+        <td>{% if project.online_financing.is_financing =="no" %} - {% else %} {{project.online_financing.order_type}} {% endif %}
+        </td>
+
+
+    </tr>
+    {% else %}
+    <tr>
+        <td colspan="10" align="center">{{project.msg}}</td>
+    </tr>
+    {% endif %}
+</table>
+
+</body>
+</html>

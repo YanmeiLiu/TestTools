@@ -1,0 +1,36 @@
+
+/* 表格元素样式 */
+table {
+border-collapse: collapse; /* 折叠表格边框 */
+width: 100%; /* 表格宽度 */
+table-layout: auto;
+
+}
+/* 表格边框样式 */
+table, th, td {
+border: 1px solid black; /* 设置边框样式 */
+}
+/* 表头样式 */
+th {
+text-align: center; /* 对齐方式 */
+background-color: lightblue; /* 背景颜色 */
+font-weight: bold; /* 文字加粗 */
+}
+/* 鼠标悬停样式 */
+tr:hover {
+background-color: yellow; /* 背景颜色 */
+}
+/* 单元格样式 */
+td {
+font-size: 16px; /* 字体大小 */
+padding: 10px; /* 内边距 */
+text-align: center; /* 对齐方式 */
+}
+/*导航样式*/
+.nav li{
+background-color: red;
+ padding: 8px 15px;
+ float: left;
+ list-style: none;
+ color:#fff;
+}
